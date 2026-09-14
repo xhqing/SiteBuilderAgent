@@ -2,7 +2,7 @@
 
 本项目所有重要变更均记录在此文件中。格式参考 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/)，版本号遵循 [语义化版本](https://semver.org/lang/zh-CN/)。
 
-## [Unreleased]
+## [0.1.0] - 2026-09-13
 
 ### 变更（删除 site-builder skill 里的「主动调用 find-skill」执行原则）
 

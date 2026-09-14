@@ -3,8 +3,7 @@
 <img src="assets/logo.svg" width="640" alt="Mason logo" />
 
 ![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
-![Stars](https://img.shields.io/github/stars/xhqing/SiteBuilderAgent?style=social)
-![Last Commit](https://img.shields.io/github/last-commit/xhqing/SiteBuilderAgent)
+![Version](https://img.shields.io/badge/Version-0.1.0-blue)
 ![AI Agent](https://img.shields.io/badge/Type-AI%20Agent-FF1493)
 
 </div>
@@ -17,7 +16,7 @@
 
 Mason owns the **infrastructure side of conversion**. He doesn't produce the product, drive traffic, or run order ops — he builds the storefront and wires up payment until a buy link can actually take money. Build the site, then hand off the keys.
 
-[中文文档 / Chinese](README_cn.md)
+[简体中文](README_cn.md)
 
 ---
 
@@ -143,7 +142,7 @@ Runtime data is centralized under `docs/`. Core config: `docs/config.json`.
 
 ## 📄 License
 
-MIT — see [LICENSE.md](LICENSE.md).
+Copyright (c) 2026 All Contributors. MIT — see [LICENSE.md](LICENSE.md).
 
 ## 🏷️ Attribution
 

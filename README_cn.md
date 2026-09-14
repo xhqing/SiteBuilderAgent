@@ -3,8 +3,7 @@
 <img src="assets/logo.svg" width="640" alt="Mason logo" />
 
 ![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
-![Stars](https://img.shields.io/github/stars/xhqing/SiteBuilderAgent?style=social)
-![Last Commit](https://img.shields.io/github/last-commit/xhqing/SiteBuilderAgent)
+![Version](https://img.shields.io/badge/Version-0.1.0-blue)
 ![AI Agent](https://img.shields.io/badge/Type-AI%20Agent-FF1493)
 
 </div>
@@ -143,7 +142,7 @@ SiteBuilderAgent/
 
 ## 📄 协议
 
-MIT，详见 [LICENSE.md](LICENSE.md)。
+版权所有 (c) 2026 All Contributors。MIT，详见 [LICENSE.md](LICENSE.md)。
 
 ## 🏷️ 署名
 
