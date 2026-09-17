@@ -30,3 +30,9 @@ __pycache__/
 .env
 .env.*
 !.env.example
+
+# 落地页本机运行时配置（GA4 / Pixel / CF token / 购买链接真实值，见 site/config.example.js）
+site/config.js
+
+# Python 编译缓存
+__pycache__/

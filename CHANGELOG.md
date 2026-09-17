@@ -2,6 +2,33 @@
 
 本项目所有重要变更均记录在此文件中。格式参考 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/)，版本号遵循 [语义化版本](https://semver.org/lang/zh-CN/)。
 
+## [Unreleased]
+
+### 新增（payloadz-login skill：凭证不进对话上下文的自动登录）
+
+- **为什么改**：建设期任务清单里的 Payloadz 支付链路配置需要登录卖家账户；用户明确提出隐私顾虑——不能用 read 工具直接读凭证文件，否则密码明文进入对话上下文随请求发给模型服务商。解法是把登录动作打包成 skill：脚本进程自己读本地凭证、自己操作浏览器填表，对话上下文从头到尾只有文件路径。
+- **改了什么**（2026-09-17）：新建 `.claude/skills/payloadz-login/`（经 `.pi/skills` 软链接对 pi 可见）：`SKILL.md`（触发场景 / 用法 / 退出码表 / 安全纪律：绝不用 read 读凭证）+ `scripts/login.py`（Python Playwright：读 `~/.payloadz/credentials.json` → 系统 Chrome（`channel='chrome'`，实测 agent-browser 自带 chromium 与 Python playwright 版本不匹配故弃用）持久化 profile 打开 `login.aspx` → 填 `#loginUsername` / `#loginPassword` / 勾选记住我 → 点 "Login To Your Account" → 等 URL 离开登录页判成功；reCAPTCHA 拦截时自动保持浏览器窗口供人工接管；登录态存 `~/.payloadz/browser-profile/`，二次调用直接复用会话）。配套：`~/.payloadz/credentials.json` 凭证文件（600 权限，用户主目录、不入仓）；`.gitignore` 追加 `__pycache__/`（py_compile 缓存实测会被跟踪）。
+- **验证**：登录页结构为 2026-09-17 真实浏览器实测（主页链接指向 `/login.aspx`，表单字段见上）；脚本语法检查、空凭证分支（退出码 3 + 填写提示）、`--help` 实测通过；真实登录待用户填完凭证后跑通。
+
+### 新增（接收 Wright→Mason 建设期交接：artifacts/handoff.md）
+
+- **为什么改**：Mason 反馈未收到 Wright 最新成品数字产品的交接——核实属实：Wright 侧成品与《产品说明》早已就绪，但从未向本仓做交接动作，且付费产物只存在于 Wright 仓被 .gitignore 忽略的本机目录中，本会话无从得知其位置与用途，建设期（流水线第 ③ 步）无法开工。
+- **改了什么**（2026-09-16，由 Wright 侧写入）：新建 `artifacts/handoff.md` 交接输入（放在本仓既有的产物接力忽略目录内，勿公开勿提交），含：产物本机路径表（《产品说明》/ 成品源目录 / 交付实物 zip）、建设期任务清单（Payloadz + PayPal 支付链路配置、落地页、建好购买链接交 Buzz）、渠道硬约束（Gumroad 不可用）、付费产物严禁推公开仓库警示、交接核对清单。定价等付费层细节不写入本条目（CHANGELOG 会公开），见被忽略的 handoff 与 Wright 侧《产品说明》。
+- **边界**：仅新增交接输入文件，未动本仓任何既有文件；handoff.md 已确认被 `.gitignore` 的 `artifacts/` 规则忽略（`git check-ignore` 实测通过）。
+
+### 新增（落地页第一版：site/ 静态单页 + 无后端统计架构）
+
+- **为什么建**：Wright 交接的建设期任务清单第 2 项「落地页部署（可选）」，经查证 Payloadz 自带页面只提供累计浏览计数、不允许在销售页埋自定义统计代码（官方帮助中心全量 227 篇确认），拿不到 landing_page_view 级别的漏斗数据，判定「自带页面不够用」——自建落地页以补齐数据层（浏览 → 出站点击 → 成交的完整漏斗，供 Echo 复盘）。
+- **改了什么**（2026-09-17）：新建 `site/` 目录：`index.html`（英文单页，文案取自《产品说明》：人群 / 7 模块 / open-core 边界第一屏明示 / 定价）、`style.css`（深色主题、无外部依赖）、`analytics.js`（GA4 + Meta Pixel + Cloudflare Web Analytics 动态注入，均按配置存在与否开关；CTA 点击手动事件 + beacon transport 兜底，防导航前丢失）、`config.example.js`（配置占位符模板）、`README.md`（配置与部署说明）；`.gitignore` 追加 `site/config.js`（运行时真实值仅存本机）。
+- **架构决策**：纯静态、无后端、无数据库——浏览与点击数据全部由第三方统计服务托管，成交层由 Payloadz「Download Page Text」字段贴转化码补齐；CTA 在购买链接未配置时保持禁用态（URL 格式校验防止占位符误激活）。
+- **验证**（headless Chrome 实测）：占位符配置下三个 CTA 按钮全部正确禁用；合法配置下按钮激活、早鸟横条显隐与兑换码填充正确、GA4 / CF beacon 脚本正确注入。
+
+### 变更（落地页 What's inside 副标修正：「you clone and run」→「clone-ready」）
+
+- **为什么改**：用户核对文案与交付实物发现失实——副标「a bundle you clone and run」中 "run" 一词为落地页写作时自行引入，《产品说明》原话是「clone-ready bundle」；交付 zip 实测 20 文件全为 Markdown 手册 + 空白模板 + SVG 图表，无 .git、无任何可执行内容，买家按 README Quick Start 自建仓库（`git init`），bundle 是动手原料而非可运行物。目标买家为跑 agent harness 的技术人群，"clone and run" 会造成「解压即得可跑仓库」的预期落空（退款 / 争议风险），且与 open-core 定位（代码免费、付费层卖的是组织方法）自相矛盾。
+- **改了什么**（2026-09-17）：`site/index.html` What's inside 副标「a bundle you clone and run.」→「a clone-ready bundle.」，回归 spec 原话口径；页面其余 clone 表述（hero 副标 / 数据条 / How it works 第 1 步 / 定价区）本就与 spec 一致，未动；hero 角标「clone & go」经用户确认保留。
+- **溯源核查**：纯文案措辞修正，不动页面结构、价格与 CTA 行为，无回归风险。
+
 ## [0.1.0] - 2026-09-13
 
 ### 变更（CLAUDE.md 角色定位明确"建站工程师"本质是搭成交基础设施）
