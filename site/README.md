@@ -9,7 +9,7 @@ No build step, no dependencies. Product info: `product_id: Team-Playbook-v3`.
 |---|---|
 | `index.html` | Page content (EN) |
 | `style.css` | Styling |
-| `analytics.js` | GA4 / Meta Pixel / CF Web Analytics injection + CTA events |
+| `analytics.js` | GA4 / Meta Pixel / CF Web Analytics injection + CTA + email-capture events |
 | `config.js` | **Local runtime config — git-ignored, never commit real values** |
 | `config.example.js` | Placeholder template for `config.js` |
 
@@ -24,6 +24,7 @@ cp config.example.js config.js   # then fill real values
 - `cfToken` — Cloudflare Web Analytics beacon token (independent view count)
 - `buyUrl` — Payloadz GoLink; CTAs are disabled until it is set
 - `earlyBird` — launch-week banner switch (code/price/deadline owned by Vendy)
+- `newsletterUrl` — email capture endpoint for the free-sample form (e.g. Buttondown embed subscribe URL); form disabled until set
 
 ## Data flow (why no backend / database)
 
@@ -31,6 +32,7 @@ cp config.example.js config.js   # then fill real values
 landing page load  -> GA4 page_view (+ Pixel PageView, + CF view)
 CTA click          -> GA4 outbound click (auto) + click_buy_cta (beacon backup)
                    -> redirect to Payloadz GoLink -> PayPal
+email capture      -> form POST to newsletterUrl (new tab) + GA4 generate_lead / Meta Lead
 post-purchase      -> Payloadz "Download Page Text" field fires conversion code
 ```
 

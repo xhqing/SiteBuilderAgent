@@ -11,6 +11,7 @@
  *   cfToken  -> Cloudflare Web Analytics beacon (independent view count)
  *   buyUrl   -> Payloadz buy link; CTA buttons stay disabled until it is set
  *   earlyBird{enabled,code,price,deadlineNote} -> launch-week banner
+ *   newsletterUrl -> email capture endpoint (free-sample form, disabled until set)
  */
 (function () {
   "use strict";
@@ -103,6 +104,33 @@
         setTimeout(function () { window.location.href = CFG.buyUrl; }, 120);
       }, true);
     });
+
+    // Email capture (free sample). The form POSTs to the configured
+    // newsletter endpoint (e.g. Buttondown embed subscribe) in a new tab,
+    // so visitors never leave the page. Tracks GA4 generate_lead + Meta Lead.
+    var form = document.getElementById("email-form");
+    if (form) {
+      var submitBtn = form.querySelector(".email-cta");
+      if (!CFG.newsletterUrl || !/^https?:\/\//.test(CFG.newsletterUrl)) {
+        if (submitBtn) {
+          submitBtn.disabled = true;
+          submitBtn.title = "Email signup not configured yet.";
+        }
+      } else {
+        form.action = CFG.newsletterUrl;
+        form.addEventListener("submit", function () {
+          if (window.gtag) {
+            gtag("event", "generate_lead", {
+              cta_label: form.getAttribute("data-cta") || "free-sample",
+              product_id: PRODUCT_ID
+            });
+          }
+          if (window.fbq) {
+            fbq("track", "Lead", { content_name: PRODUCT_ID });
+          }
+        });
+      }
+    }
   }
 
   if (document.readyState === "loading") {

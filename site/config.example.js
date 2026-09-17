@@ -16,6 +16,11 @@ window.SITE_CONFIG = {
   // Payloadz buy link (GoLink). CTA buttons stay disabled until this is set.
   buyUrl: "<PAYLOADZ_GOLINK_URL>",
 
+  // Email capture endpoint (free-sample form). Example: Buttondown embed
+  // subscribe URL — "https://buttondown.email/api/emails/embed-subscribe/<user>".
+  // The form stays disabled until a real URL is set.
+  newsletterUrl: "",
+
   // Launch-week early bird banner (Vendy owns final code & price).
   earlyBird: {
     enabled: false,

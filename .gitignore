@@ -18,6 +18,9 @@ node_modules/
 # 临时产物（见 .claude/rules/tmp-dir-for-artifacts.md）
 tmp/
 
+# playwright-cli 浏览器自动化的本机调试产物（console 日志 / 页面快照，运行时生成，非源码）
+.playwright-cli/
+
 
 # 产物接力目录（含可售卖成品 / 站点源码快照，勿公开）
 artifacts/
