@@ -4,6 +4,71 @@
 
 ## [Unreleased]
 
+### 新增（社交分享卡片：OG / Twitter meta + 1200×630 预览图）
+
+- **为什么改**：Buzz 引流主战场是 X，帖子内链接卡片无图无描述会直接压点击率；落地页此前没有任何 OG / Twitter Card 标签（实测确认缺口），这是引流第一印象层面的硬缺口。
+- **改了什么**（2026-09-18）：`site/og-image.svg` + `og-image.png`（1200×630，与落地页同风格：GitHub 深色系 + 蓝主色，视觉主体为 1 manager → 3 squads → 20 agents 的迷你组织图，按 icon-design 规范视觉资产文字用英文）；`index.html` 补齐 og:type / og:url / og:title / og:description / og:image + twitter:card（summary_large_image）全套；部署仓同步 push。
+- **验证**：线上 og-image.png 200 可达、页面 og 标签 5 项在线；OCR 校验图内文字渲染正确。
+
+### 新增（交付链路演习：Test Delivery 全链路实走 + 补录终验）
+
+- **为什么改**：全链路此前只验证到「购买页正常」，买家付款后的真实路径（下载邮件 → 下载页 → 拿到文件 → GA4 成交记录）从未完整走过；等真实首单才发现交付问题就是差评事故，发引流前用官方 Test Delivery 功能演练。
+- **改了什么**（2026-09-18）：无——纯验证性演习，未改任何线上配置（测试订单一笔：PL4AB57FA1E52449E，$0，英文版产品）。
+- **验证结果（全过）**：① Test Delivery 发送成功（邮件送达卖家邮箱，后台给出下载 URL）；② 买家视角无登录态打开下载页：文案正常（产品名 / SKU / 订单摘要 / 支持邮箱），无残留乱码；③ 实际下载 zip：MD5 与源文件逐字节一致、解压完整无损（12 文件）；④ 批量补录工具抓到该订单（SKU 映射正确）并 dry-run 校验通过；⑤ 正式补录 204 收妥，状态文件去重落位（GA4 内新增一笔 $0 purchase 测试记录，可在 Realtime 查看）。
+
+### 新增（T4 成交层落地：GA4 Measurement Protocol 补录制替代网页贴码）
+
+- **为什么改**：T4 原方案（Payloadz「Download Page Text」字段贴 GA 转化码）实测不可行——该字段为纯文本，HTML 提交时被整体转义存储（`<script>` 存成 `&lt;script&gt;`，买家会看到乱码而非执行），且误存内容已当班清理恢复。备选的 Remote Download Page（远程下载页 + JS 变量注入）虽机制存在，但配置入口未公开、官方自述仅限罕见场景、直接改动买家付款后拿文件的交付链路，在无真实订单验证时风险大于收益，不采用（升级路径保留）。
+- **改了什么**（2026-09-18）：改用 GA4 官方 Measurement Protocol 补录制：用户在 GA4 后台创建 API secret（存本机 `~/.ga/api-secret.txt`，600 权限，不入仓）；新建 `docs/ga4-purchase-log.py`（单笔补录：按 SKU 映射产品名与默认价，`--txn` 订单号生成标准 purchase 事件 POST 至 GA4，支持 `--dry-run` 走 debug 端点校验）。
+- **验证**：debug 端点校验通过（validationMessages 为空）；正式端点 204 收妥；脚本 dry-run 自测通过；测试事件 `test_mp_link` 发送成功。
+
+### 新增（成交补录批量工具：对账一条命令自动补录全部新订单）
+
+- **为什么改**：单笔补录需 Vendy 逐单敲命令，订单量起来后是重复劳动；且早鸟期价格变化需人工传 `--value`，易错。
+- **改了什么**（2026-09-18）：新建 `docs/ga4-purchase-batch.py`：Playwright 复用 Payloadz 登录态自动抓 Sales History（日期窗口可调）→ 过滤 Team-Playbook 订单 → 状态文件 `~/.ga/backfilled-orders.json` 去重（已录跳过）→ 逐笔 POST purchase，**金额取订单表实际价格**（早鸟 $35 自动正确）。Vendy 交接文件同步更新（`DigiVendAgent/docs/handoff.md` 成交补录段改以批量工具为主）。
+- **验证**：宽窗口实测——RAW 抓取 1 行（6 月测试订单）且被产品过滤器正确排除（输出 0 待补录）；流程零异常退出。踩坑沉淀：Sales History 表格为 div 模拟（`selling-summary__table-row`，非 `<table>`）；cell 内 `<strong>` 标签为 display:none，`innerText` 即裸值，不可再做切行处理；Python 三引号内嵌 JS 的 `\n` 需写双反斜杠（运行时转义后才是 JS 合法字面量）。真实订单补录待首单发生后自然验证。
+
+### 新增（T5 交接 Buzz：引流链接与 UTM 约定交付）
+
+- **为什么改**：流水线接力③→④——成交阵地全就绪，Buzz 引流开工前需要正式接收。
+- **改了什么**（2026-09-18）：新建 Buzz 仓 `artifacts/handoff.md`（其 .gitignore 已忽略）：资产清单（落地页主推 / EN·ZH 购买直链 / GA4 看板）、UTM 逐项约定、引流纪律（open-core 边界、早鸟码未配置前禁提早鸟价、渠道硬约束、product_id+campaign_id 双归因）、purchase 补录延迟说明；同步记 Buzz 仓 CHANGELOG 一条。
+
+### 新增（T5b 交接 Vendy：阵地运营移交）
+
+- **为什么改**：流水线接力③→⑤——阵地建好后运营期（定价执行 / 履约 / 售后 / 对账）归 Vendy，需正式移交后台入口与工具。
+- **改了什么**（2026-09-18）：新建 Vendy 仓 `docs/handoff.md`（其运行时目录，被 gitignore）：阵地资产与后台入口、早鸟双开关机制说明（Payloadz 限时直降价 ≠ 折扣码，两处同步、与 Buzz 首发对齐）、成交补录工具用法与时机、运营 SOP（订单监控 / Send a Download 售后补发 / 三方对账 / 首周后收尾）；同步记 Vendy 仓 CHANGELOG 一条。建设期交接至此全部完成（Buzz + Vendy 双下游就位）。
+
+### 新增（GA4 埋点上线：Measurement ID 回填 + 生产环境事件验证）
+
+- **为什么改**：建设期 T2 尾巴 + T3——落地页上线时 GA4 property 尚未创建（需 Google 登录，本机无登录态），ga4Id 置空上线；漏斗数据的浏览层 / 意向层依赖 GA4 就位后才能采数。
+- **改了什么**（2026-09-17）：
+  - 用户在专用持久化浏览器 profile（`~/.ga/browser-profile`，以后 GA 相关操作复用）人工登录创建 GA4 property（Account xhqing / Property agent-team-playbook / Web 数据流指向落地页，Measurement ID `G-FRE2DZS751`）。
+  - 回填 `site/config.js` 的 `ga4Id` 并同步部署仓 push，Pages 自动重建后线上 config 生效。
+- **验证**（生产环境实测）：GA 脚本加载（`gtag/js?id=G-FRE2DZS751`）；page_view 上报（collect 请求 tid 实证）；click_buy_cta 事件在 CTA 点击时产生（dataLayer 实证，携带 cta_label / product_id=Team-Playbook-v3）；CTA→Payloadz 跳转正常（跳转后页面为 Payloadz 自己的 GA 埋点 tid，与本项目无冲突）。outbound click 为 Enhanced Measurement 自动项，仅真实跳转场景触发，未单独拦截验证。
+- **验证方法备注**：CTA 点击后 120ms 即跳转，beacon 请求在 Playwright request 监听里与页面卸载竞态不可靠；改用「buyUrl 置为页内锚点使页面存活 + 直接读 dataLayer」验证事件产生，加上 page_view 的 collect 实证发送链路，闭环成立。
+
+### 新增（落地页部署上线：GitHub Pages 独立仓库 agent-team-playbook）
+
+- **为什么改**：建设期主线 T2——购买链接就位后（T1 完成），落地页必须上线才能成为 CTA 的承接阵地与漏斗数据层，下游 Buzz 引流才有链接可发。
+- **改了什么**（2026-09-17）：
+  - 选型：GitHub Pages（gh 已登录、零新依赖；wrangler 未装故 Cloudflare Pages 弃选）；独立部署仓 `xhqing/agent-team-playbook`（公开）而非挂在 SiteBuilderAgent 下——销售 URL `https://xhqing.github.io/agent-team-playbook/` 带品牌词、不暴露 agent 仓库名，后续可绑自定义域名。
+  - 部署内容：`site/` 六文件（index / style / analytics / config / config.example / README）组装至本机 `tmp/deploy/` 后推 main，Pages 从 main 根目录部署。部署仓含真实 `config.js`：其值（buyUrl、GA4 ID、newsletterUrl）全部为设计上浏览器端公开可见的运行时配置，不构成敏感信息泄露；主仓 `.gitignore` 规则不变。
+  - 预防性修正：`config.js` 的 `ga4Id` 占位符置空——analytics.js 对 ga4Id 只判真值不验格式，占位符会被当真 ID 注入错误脚本源；待拿到真实 Measurement ID 后回填再 push。
+- **验证**（生产环境 headless 实测）：HTTPS 200、build status built；标题正确；buyUrl 加载；三个 CTA（nav / hero / pricing）全部激活；点击 hero CTA 实际跳转 Payloadz 购买页（store.payloadz.com/details/2722311-…）；无 JS 错误。
+- **待办衔接**：GA4 property 创建需用户登录 Google（本机无登录态），不阻塞销售链路；T2 剩余部分、T3 GA4 验证、T5 向 Buzz 交接的素材均已就绪。
+
+### 新增（Payloadz 上架完成：双语言版本产品 + 交付文件 + 购买链接就绪）
+
+- **为什么改**：建设期主线 T1——把 Wright 交接的成品数字产品（The Agent Team Playbook，分中英两版独立包）真正变成可成交阵地：产品上架、交付文件上传、购买链接就绪，下游 Buzz 才有链接可发。
+- **改了什么**（2026-09-17）：
+  - 打包交付实物：两版分语言 zip（英文版 / 中文版各 12 文件，与《产品说明》文件清单一一对应，`unzip -t` 完整性校验通过），存 Wright 侧被忽略的 artifacts 目录。
+  - 调研结论：Payloadz 官方 seller API 已退役（帮助中心 2026-09 确认：产品创建、文件上传等 legacy 方法全部不可用，仅剩需人工审批的 TransactionCreation），程序化上架只能走网页后台自动化。
+  - 网页自动化上架（Playwright + payloadz-login skill 的持久化登录态，脚本在本机 `tmp/`）：英文版产品 `TEAMPLAYBOOK-EN-001`（购买链接 `https://store.payloadz.com/go?id=2722311`）、中文版产品 `TEAMPLAYBOOK-ZH-001`（`https://store.payloadz.com/go?id=2722313`），均 eBooks → Computers 分类、定价 $49（按建议价，最终定价权在 Vendy），描述与致谢文案按《产品说明》要点撰写。
+  - 交付文件上传并关联：两版 zip 分别经后台文件页上传至 Payloadz 服务器，ProductDetail 的 File Location 均指向对应 zip（上传即自动关联，无需手动勾选）。
+  - 本机 `site/config.js`（被 .gitignore 忽略）的 `buyUrl` 填入英文版购买链接——落地页主 CTA 激活条件就位。
+- **关键经验（供后续维护 / 上新复用）**：① ProductSetup 页的 `FileUpload_1..6` 是商品图片位（仅 JPG/PNG/GIF），交付文件走 ProductFile 页（保存产品后自动跳转）；② 分类虽标 Optional 但客户端验证器强制必选（选完主分类会触发整页 postback，之后不能重新 goto 否则选择丢失）；③ 描述编辑器为 Quill，需先 `scroll_into_view_if_needed` 再 click 聚焦后物理输入，自动同步至隐藏 textarea；④ Payloadz 存储层不支持非 ASCII 字符（中文存成 `?`），中文版产品名 / 描述改纯英文（中文信息由落地页承载）；⑤ ASP.NET WebForms 提交后 URL 不变，成败判定看表单重置或页面跳转，勿用 URL 变化作唯一判据。
+- **验证**：未登录 curl 实测两个 store 购买页（标题、$49 价格、Checkout、PayPal 字样均在位）；ProductDetail 实测两产品 File Location 指向对应 zip；产品列表双 SKU 在列。上架脚本与探测脚本存本机 `tmp/`（git 忽略）。
+
 ### 变更（接收 Wright 交接更新：Team Playbook 交付拆分为中英两版独立包）
 
 - **为什么改**：Wright 侧按用户新规把产品交付由双语混装单 zip 物理拆分为英文版、中文版两个独立版本（源目录两棵同构树 + 分语言双 zip 口径），旧混装包废止仅存档；本仓 `handoff.md` 仍指向旧源目录与旧 zip，不同步则建设期会拿错交付物。
