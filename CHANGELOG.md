@@ -4,6 +4,50 @@
 
 ## [Unreleased]
 
+### 变更（handoff 产品二节加失效指针：GitComic 素材口径更新、试水已直接交 Buzz）
+
+- **为什么改**：GitComic 中文试读版验收通过后用户拍板启动国内验证试水（免费试读、不带货），Wright 直接向 Buzz 交接素材与口径；本仓 handoff 产品二节的 GitComic 产物路径已随 GitComic 仓 `artifacts/` 移除全部失效（图卡亦退役），加指针防止误用旧路径。
+- **改了什么**（2026-09-22）：`artifacts/handoff.md` 产品二节头部加更新指针——本节仅存档备查、阵地侧无任务，最新素材与试水口径见 `GrowthMarketerAgent/artifacts/handoff.md` GitComic 节。
+
+- **为什么改**：Wright（ProductProducerAgent）完成 T4 流水线任务——美国麻将双语 Playbook 生产并按「完成即交接」机制写入本仓 `artifacts/handoff.md`（产品三节），本仓需同步记录接收动作。
+- **改了什么**（2026-09-21）：`artifacts/handoff.md` 追加产品三节——`product_id: product_am_mahjong_playbook`（英文主品，22 页 PDF + 速查表）与 `product_am_mahjong_playbook_cn`（中文版，20 页 PDF + 速查表），两 zip 在 ProductProducerAgent 仓 `artifacts/mahjong/`（MD5 比对一致）；头部交接时间链追加本次记录。Mason 侧任务：英文版上架 Payloadz（建议定价见被忽略的 handoff 与产品说明，Vendy 执行），中文版走小红书店铺链路（不走 Payloadz），购买链接建好后交 Buzz。
+- **边界**：付费产物严禁推公开仓库（Wright 仓 artifacts/ 被 gitignore，只能本机路径访问）；定价与发布节奏归 Vendy / Buzz。
+
+### 变更（产品二产物迁仓：GitComic 子项目成立，handoff 路径改指 GitComic）
+
+- **为什么改**：用户指令建立 GitComic 子项目（Wright 负责），Git 漫画书产品内容整体从 ProductProducerAgent 迁入新仓 `/Users/xhq/Developer/GitComic`——`artifacts/handoff.md` 产品二节里的产物路径（产品说明 + 四 zip + 源目录 + 制作资产）若不跟着更新，Mason 侧按旧路径找产物会全部落空。
+- **改了什么**（2026-09-19）：`artifacts/handoff.md` 产品二节标题补迁仓说明；路径表 3 处全路径与 `…` 缩写说明全部由 `/Users/xhq/Developer/ProductProducerAgent` 改指 `/Users/xhq/Developer/GitComic`。产品内容与版本（0.2.1、双 product_id）零改动，仅位置变化。
+- **边界**：产品一（Team Playbook）产物仍在 ProductProducerAgent 仓，handoff 产品一节路径未动。
+
+### 新增（Buzz 在部署仓加同域短链路由 go/，落地页引流链接缩短）
+
+- **为什么改**：X 发帖 / bio 引流用的 UTM 长链接（127 字符）太长且复制易断裂（已发生断链事故：链接断在 utm_campaign 值中间，归因丢失）；Buzz（GrowthMarketerAgent）申请同域短链，避免第三方短链服务的存续与封禁风险。
+- **改了什么**（2026-09-19）：部署仓（tmp/deploy，即 GitHub agent-team-playbook 仓库）新建 `go/` 短链路由——`go/{bio,t1,p2,p3,p4}/index.html` 五个跳转页，meta refresh + location.replace 双跳转到带完整 UTM 参数的落地页；跳转页不埋 GA（避免与落地页重复 page_view），归因靠落地页 URL 参数不变；noindex 防搜索引擎索引短链页。映射表与长链权威源见 GrowthMarketerAgent 仓 `artifacts/playbook-launch/plan.md`。
+
+### 变更（产品二升版 0.2.1：气泡指向错人与中文错字修复，重打包）
+
+- **为什么改**：用户验收反馈 p12 视觉异常（「the direction of screen is wrong」），Wright 逐层排查定位为排版层气泡尾巴指向错人（p12 两句话说话人互换、p06 台词无主），连带修复中文版「孩档点」错字与包内 README 版本号漂移，升版 0.2.1 重打包。
+- **改了什么**（2026-09-18 晚）：`artifacts/handoff.md` 产品二节四 zip 路径更新为 0.2.1，头部追加修订记录；交接清单标注旧 0.2.0 / 0.1.0 包已移除勿用。
+- **边界**：交接任务清单、定价口径、渠道约束均不变；**上架一律取 0.2.1 包**。
+
+### 变更（产品二 0.2.0 质量返工：p12 等九页底图重画后重打包）
+
+- **为什么改**：用户验收发现 p12 底图对称显示器畸形与屏幕伪文字，Wright 对全部 18 页底图做 VLM 专项质检并重画 9 页（p01/p02/p03/p05/p10/p11/p12/p17/p18）。
+- **改了什么**（2026-09-18）：双语言试读 PDF 重建并重打 `git-comic-v1-en-0.2.0.zip` / `git-comic-v1-zh-0.2.0.zip`（图卡包未动）；handoff 交接清单不变。
+- **边界**：版本号维持 0.2.0（同版质量返工）；交接任务清单不变。
+
+### 变更（产品二升版 0.2.0：Agnes AI 插画版交付）
+
+- **为什么改**：用户反馈漫画画力不足，Wright 接入 Agnes AI 生图（角色基准多图合成锁一致性 + VLM 盲审质检）重制插画层，产品升版 0.2.0。
+- **改了什么**（2026-09-18）：`artifacts/handoff.md` 产品二节：四 zip 升级为 0.2.0（旧 0.1.0 已移除勿用）；验收记录口径更新（8 项含 AI 质检）。
+- **边界**：交付物路径与任务清单不变；产品细节见 Wright 仓产品说明（本机路径在 handoff 内）。
+
+### 变更（产品二交接更新：Git 漫画书补齐中文版四包）
+
+- **为什么改**：用户指令「所有漫画内容要有对应的中文版」——Wright 同日将 Git 漫画书试读版与图卡包补齐中文版（覆盖报告原「中文版暂存不发」决策），交接输入同步更新。
+- **改了什么**（2026-09-18）：`artifacts/handoff.md` 产品二节：交付 zip 由双包改为四包（en/zh × 试读 PDF/图卡）、产物路径表补三个 zh 目录与 zip、待办补「中文版就绪待命小红书」口径（阵地侧暂不需动）。
+- **边界**：中文版发布时机与小红书链路由 Buzz / Vendy 拍板，建设期暂不动；产品内容与验收记录见 Wright 仓产品说明（本机路径在 handoff 内）。
+
 ### 新增（接收第二个产品交接：Git 漫画书试读版 + 引流图卡）
 
 - **为什么改**：Wright 完成 Scout 流水线第二件产品《Git: The Comic》英文试读版（`product_id: Git-Comic-v1`，20 页 PDF）+ 引流图卡包（`Git-Comic-Mini`，10 张 1080×1350），按「完成即交接」机制写入本项目被忽略目录的 `artifacts/handoff.md`（付费/引流产物不进公开仓库，本条目只记交接事实不展开产品细节）。
