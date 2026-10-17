@@ -4,6 +4,12 @@
 
 ## [Unreleased]
 
+### 变更（新增 AGENTS.md 软链接：pi 侧统一入口，指向 CLAUDE.md）
+
+- **为什么改**：用户 2026-10-17 修订「智能体专属文件归属」规则（统一为「Agent 进驻子项目」网络，取代 2026-10-12 的旧规），各 Agent 项目统一以 `AGENTS.md` 作为 pi 侧入口；Kit（ExecutiveAssistantAgent）按此为本项目补上入口软链接，本仓需提交该改动并记录。
+- **改了什么**（2026-10-17）：项目根新增 `AGENTS.md` 软链接（相对路径指向同目录 `CLAUDE.md`，随仓库提交）——pi 会话读取 `AGENTS.md` 即等价读取本项目项目级指令 `CLAUDE.md`，权威来源仍只有一份，不产生副本。
+- **边界**：本项目无子项目，无子项目侧 `AGENTS.md` / `.pi` 链接改动；`.claude/` 按 2026-10-17 决定不纳入该网络。
+
 ### 变更（handoff 产品二节加失效指针：GitComic 素材口径更新、试水已直接交 Buzz）
 
 - **为什么改**：GitComic 中文试读版验收通过后用户拍板启动国内验证试水（免费试读、不带货），Wright 直接向 Buzz 交接素材与口径；本仓 handoff 产品二节的 GitComic 产物路径已随 GitComic 仓 `artifacts/` 移除全部失效（图卡亦退役），加指针防止误用旧路径。
