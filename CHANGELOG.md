@@ -4,6 +4,11 @@
 
 ## [Unreleased]
 
+### 变更（站点团队列表：量化 agent 拟人名 Markowitz 改为 Mark）
+
+- **为什么改**：用户 2026-10-17 决定把量化 agent 的拟人名由 Markowitz 改为 Mark（项目名 QuantStrategistAgent 不变）；站点首页团队列表按旧拟人名展示，需同步为团队现状。
+- **改了什么**（2026-10-17）：`site/index.html` 团队列表「Investing & Trading」小组的条目「📐 Markowitz · Quant Strategist」改为「📐 Mark · Quant Strategist」；页面其余内容未动。
+
 ### 变更（新增 AGENTS.md 软链接：pi 侧统一入口，指向 CLAUDE.md）
 
 - **为什么改**：用户 2026-10-17 修订「智能体专属文件归属」规则（统一为「Agent 进驻子项目」网络，取代 2026-10-12 的旧规），各 Agent 项目统一以 `AGENTS.md` 作为 pi 侧入口；Kit（ExecutiveAssistantAgent）按此为本项目补上入口软链接，本仓需提交该改动并记录。
