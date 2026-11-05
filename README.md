@@ -72,7 +72,7 @@ SiteBuilderAgent/
 ├── README.md                 ← this file (English)
 ├── README_cn.md              ← Chinese README
 ├── LICENSE.md                ← MIT
-├── CLAUDE.md                 ← project-level agent instructions
+├── AGENTS.md                 ← project-level agent instructions
 ├── .claude/
 │   └── skills/
 │       └── site-builder/     ← Site Builder Engine skill (build loop)
