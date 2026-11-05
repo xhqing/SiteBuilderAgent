@@ -72,7 +72,7 @@ SiteBuilderAgent/
 ├── README.md                 ← 英文 README
 ├── README_cn.md              ← 本文件（中文）
 ├── LICENSE.md                ← MIT
-├── CLAUDE.md                 ← 项目级 Agent 指令
+├── AGENTS.md                 ← 项目级 Agent 指令
 ├── .claude/
 │   └── skills/
 │       └── site-builder/     ← 建站引擎 Skill（建站循环）
