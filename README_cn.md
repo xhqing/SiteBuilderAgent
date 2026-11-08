@@ -142,7 +142,7 @@ SiteBuilderAgent/
 
 ## 📄 协议
 
-版权所有 (c) 2026 All Contributors。MIT，详见 [LICENSE.md](LICENSE.md)。
+版权所有 (c) 2026 xhqing。MIT，详见 [LICENSE.md](LICENSE.md)。
 
 ## 🏷️ 署名
 

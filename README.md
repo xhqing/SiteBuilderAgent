@@ -142,7 +142,7 @@ Runtime data is centralized under `docs/`. Core config: `docs/config.json`.
 
 ## 📄 License
 
-Copyright (c) 2026 All Contributors. MIT — see [LICENSE.md](LICENSE.md).
+Copyright (c) 2026 xhqing <https://github.com/xhqing>. MIT — see [LICENSE.md](LICENSE.md).
 
 ## 🏷️ Attribution
 
